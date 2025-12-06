@@ -57,14 +57,30 @@ public class Tablero extends JPanel implements ActionListener {
         setBackground(Color.BLACK);
     }
 
-    private void cargarImagenes() {
-        pacmanArriba = new ImageIcon("pacmanUp.png").getImage();
-        pacmanAbajo = new ImageIcon("pacmanDown.png").getImage();
-        pacmanIzquierda = new ImageIcon("pacmanLeft.png").getImage();
-        pacmanDerecha = new ImageIcon("pacmanRight.png").getImage();
-        fantasma = new ImageIcon("blueGhost.png").getImage();
-        cereza = new ImageIcon("cherry.png").getImage();
-        imagenActualPacman = pacmanDerecha; //como pacman siempre inicia viendo a la derecha
+        private void cargarImagenes() {
+        // Definimos la ruta base que apunta a la carpeta 'assets' en el classpath del proyecto.
+        // El '/' inicial indica la raíz del classpath.
+        String rutaBase = "/assets/sprites/pacman/";
+        String rutaBaseFantasma = "/assets/sprites/ghosts/"; 
+
+        try {
+            // Carga de imágenes de Pac-Man
+            pacmanArriba = new ImageIcon(getClass().getResource(rutaBase + "pacmanUp.png")).getImage();
+            pacmanAbajo = new ImageIcon(getClass().getResource(rutaBase + "pacmanDown.png")).getImage();
+            pacmanIzquierda = new ImageIcon(getClass().getResource(rutaBase + "pacmanLeft.png")).getImage();
+            pacmanDerecha = new ImageIcon(getClass().getResource(rutaBase + "pacmanRight.png")).getImage();
+            
+            // Carga de imágenes del Fantasma y la Cereza
+            fantasma = new ImageIcon(getClass().getResource(rutaBaseFantasma + "blueGhost.png")).getImage();
+            cereza = new ImageIcon(getClass().getResource(rutaBaseFantasma + "cherry.png")).getImage();
+            
+        } catch (NullPointerException e) {
+            // si alguna imagen no se encuentra en la ruta especificada.
+            System.err.println("ERROR: No se pudo cargar una o más imágenes. Asegúrate que están en la carpeta: " + rutaBase);
+            e.printStackTrace();
+        }
+        
+        imagenActualPacman = pacmanDerecha; // como pacman siempre inicia viendo a la derecha
     }
 
     // El gameloop
@@ -114,7 +130,7 @@ public class Tablero extends JPanel implements ActionListener {
                 if (datosPantalla[indice] == 0) {
                     datosPantalla[indice] = 2;
                     puntaje += 10;
-                    musica.comer("D:\\Documentos\\Universidad\\Programacion3\\Pcman\\Pac\\Pacman\\comer.wav", -25);
+                    musica.comer("D:\\Documentos\\Universidad\\Programacion3\\Pcman\\Pac\\Pacman\\src\\assets\\sounds\\comer.wav", -25);
                 }
 
                 if (reqDX != 0 || reqDY != 0) {
@@ -298,7 +314,7 @@ public class Tablero extends JPanel implements ActionListener {
             
             // ¡Contacto! Detenemos el juego.
             juegoEnCurso = false;
-            musica.morir("D:\\Documentos\\Universidad\\Programacion3\\Pcman\\Pac\\Pacman\\assets\\pacman_death.wav", -20);
+            musica.morir("D:\\Documentos\\Universidad\\Programacion3\\Pcman\\Pac\\Pacman\\src\\assets\\sounds\\pacman_death.wav", -20);
         }
     }
 

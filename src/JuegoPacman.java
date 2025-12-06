@@ -18,6 +18,6 @@ public class JuegoPacman extends JFrame {
 
     public static void main(String[] args) {
         new JuegoPacman();
-        //musica.reproducir("D:\\Documentos\\Universidad\\Programacion3\\Pcman\\Pac\\Pacman\\musica.wav", -10);
+        musica.reproducir("D:\\Documentos\\Universidad\\Programacion3\\Pcman\\Pac\\Pacman\\src\\assets\\sounds\\musica.wav", -40);
     }
 }
