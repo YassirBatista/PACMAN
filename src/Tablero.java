@@ -28,6 +28,9 @@ public class Tablero extends JPanel implements ActionListener {
     private boolean juegoEnCurso = true;
     private Timer timer;
 
+    //frutas
+    private Fruta miCereza;
+
     // MAPA (1 = Muro, 0 = Comida, 2 = Espacio Vacío)
     private final short datosNivel[] = {
         1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
@@ -73,6 +76,7 @@ public class Tablero extends JPanel implements ActionListener {
             // Carga de imágenes del Fantasma y la Cereza
             fantasma = new ImageIcon(getClass().getResource(rutaBaseFantasma + "blueGhost.png")).getImage();
             cereza = new ImageIcon(getClass().getResource(rutaBaseFantasma + "cherry.png")).getImage();
+            //miCereza = new Fruta(1, 13, TAMAÑO_BLOQUE_BASE, cereza);
             
         } catch (NullPointerException e) {
             // si alguna imagen no se encuentra en la ruta especificada.
@@ -121,39 +125,61 @@ public class Tablero extends JPanel implements ActionListener {
     }
 
     private void moverPacman() {
-            // Usamos TAMAÑO_BLOQUE_BASE para la lógica
-            if (pacmanX % TAMAÑO_BLOQUE_BASE == 0 && pacmanY % TAMAÑO_BLOQUE_BASE == 0) {
-                int posX = pacmanX / TAMAÑO_BLOQUE_BASE;
-                int posY = pacmanY / TAMAÑO_BLOQUE_BASE;
-                int indice = posY * NUM_BLOQUES + posX;
+        // Pac-Man se mueve píxel a píxel, pero las decisiones (girar, comer, chocar). solo pueden ocurrir cuando está perfectamente centrado en un bloque (casilla).
+        // Usamos el operador módulo (%) para verificar si las coordenadas son múltiplos de 24.
+        if (pacmanX % TAMAÑO_BLOQUE_BASE == 0 && pacmanY % TAMAÑO_BLOQUE_BASE == 0) {
+
+            // 2. CONVERSIÓN DE COORDENADAS (Píxeles -> Mapa)
+            // Calculamos en qué columna (posX) y fila (posY) de la matriz estamos.
+            int posX = pacmanX / TAMAÑO_BLOQUE_BASE;
+            int posY = pacmanY / TAMAÑO_BLOQUE_BASE;
+            
+            // Calculamos el índice único para el array unidimensional 'datosPantalla'.
+            int indice = posY * NUM_BLOQUES + posX;
+            
+            // CASO A: Comer un punto normal (Valor 0 en el mapa)
+            if (datosPantalla[indice] == 0) {
+                datosPantalla[indice] = 2; // Actualizamos el mapa: 2 significa "Vacio/Ya comido"
+                puntaje += 10;             // Sumamos puntaje estándar
                 
-                if (datosPantalla[indice] == 0) {
-                    datosPantalla[indice] = 2;
-                    puntaje += 10;
-                    musica.comer("D:\\Documentos\\Universidad\\Programacion3\\Pcman\\Pac\\Pacman\\src\\assets\\sounds\\comer.wav", -25);
-                }
+                musica.comer("D:\\Documentos\\Universidad\\Programacion3\\Pcman\\Pac\\Pacman\\src\\assets\\sounds\\comer.wav", -25);
+            }
+            
+            // CASO B: Comer una Fruta/Cereza (Valor 3 en el mapa)
+            // Esta lógica es nueva: detecta el objeto especial y da una recompensa mayor.
+            else if (datosPantalla[indice] == 3) {
+                datosPantalla[indice] = 2; // La fruta desaparece del mapa
+                puntaje += 500;            // Recompensa alta por la fruta
+                
+                musica.comer("D:\\Documentos\\Universidad\\Programacion3\\Pcman\\Pac\\Pacman\\src\\assets\\sounds\\comer.wav", -25);
+            }
 
-                if (reqDX != 0 || reqDY != 0) {
-                    if (!esMuro(posX + reqDX, posY + reqDY)) {
-                        pacmanDX = reqDX;
-                        pacmanDY = reqDY;
-                    }
-                }
-
-                if (esMuro(posX + pacmanDX, posY + pacmanDY)) {
-                    pacmanDX = 0;
-                    pacmanDY = 0;
+            // Verificamos si el usuario solicitó un cambio de dirección (reqDX/reqDY)
+            if (reqDX != 0 || reqDY != 0) {
+                if (!esMuro(posX + reqDX, posY + reqDY)) {
+                    // Si el camino está libre, aplicamos el giro solicitado.
+                    pacmanDX = reqDX;
+                    pacmanDY = reqDY;
                 }
             }
 
-            pacmanX = pacmanX + (pacmanDX * VELOCIDAD);
-            pacmanY = pacmanY + (pacmanDY * VELOCIDAD);
-            
-            if (pacmanDX == 1) imagenActualPacman = pacmanDerecha;
-            else if (pacmanDX == -1) imagenActualPacman = pacmanIzquierda;
-            else if (pacmanDY == -1) imagenActualPacman = pacmanArriba;
-            else if (pacmanDY == 1) imagenActualPacman = pacmanAbajo;
+            // Verificamos si, siguiendo en la dirección actual, vamos a chocar contra un muro. Si hay muro, detenemos a Pacman (velocidad 0).
+            if (esMuro(posX + pacmanDX, posY + pacmanDY)) {
+                pacmanDX = 0;
+                pacmanDY = 0;
+            }
         }
+
+        // Sumamos la velocidad a la posición actual para mover el sprite en la pantalla.
+        pacmanX = pacmanX + (pacmanDX * VELOCIDAD);
+        pacmanY = pacmanY + (pacmanDY * VELOCIDAD);
+        
+        // Cambiamos la imagen de Pac-Man según la dirección en la que se mueve
+        if (pacmanDX == 1) imagenActualPacman = pacmanDerecha;
+        else if (pacmanDX == -1) imagenActualPacman = pacmanIzquierda;
+        else if (pacmanDY == -1) imagenActualPacman = pacmanArriba;
+        else if (pacmanDY == 1) imagenActualPacman = pacmanAbajo;
+    }
 
 
         private void moverFantasma() {
@@ -318,7 +344,7 @@ public class Tablero extends JPanel implements ActionListener {
         }
     }
 
-    // --- AQUÍ OCURRE LA MAGIA DEL DIBUJADO Y ESCALADO ---
+    // AQUÍ OCURRE LA MAGIA DEL DIBUJADO Y ESCALADO
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -349,13 +375,21 @@ public class Tablero extends JPanel implements ActionListener {
         for (int y = 0; y < NUM_BLOQUES; y++) {
             for (int x = 0; x < NUM_BLOQUES; x++) {
                 int i = y * NUM_BLOQUES + x;
+                
                 if (datosPantalla[i] == 1) {
                     g2d.fillRect(x * TAMAÑO_BLOQUE_BASE, y * TAMAÑO_BLOQUE_BASE, TAMAÑO_BLOQUE_BASE, TAMAÑO_BLOQUE_BASE);
-                } else if (datosPantalla[i] == 0) {
+                } 
+                else if (datosPantalla[i] == 0) {
                     g2d.setColor(Color.WHITE);
                     // Puntos centrados
                     g2d.fillRect(x * TAMAÑO_BLOQUE_BASE + 10, y * TAMAÑO_BLOQUE_BASE + 10, 4, 4);
                     g2d.setColor(Color.BLUE);
+                }
+                // NUEVO: Dibujar la CEREZA si el mapa dice '3'
+                else if (datosPantalla[i] == 3) {
+                    // Dibujamos la imagen de la cereza en la posición del bloque
+                    // El '+2' es para centrarla visualmente igual que haces con Pacman
+                    g2d.drawImage(cereza, x * TAMAÑO_BLOQUE_BASE + 2, y * TAMAÑO_BLOQUE_BASE + 2, this);
                 }
             }
         }
@@ -366,7 +400,9 @@ public class Tablero extends JPanel implements ActionListener {
             // para que se vean visualmente centrados en los pasillos.
             g2d.drawImage(imagenActualPacman, pacmanX + 2, pacmanY + 2, this);
             g2d.drawImage(fantasma, fantasmaX + 2, fantasmaY + 2, this);
-            g2d.drawImage(cereza, 1 * TAMAÑO_BLOQUE_BASE + 2, 13 * TAMAÑO_BLOQUE_BASE + 2, this);
+            
+            // MODIFICADO: He comentado esta línea porque ahora la cereza se dibuja sola en el bucle de arriba
+            // g2d.drawImage(cereza, 1 * TAMAÑO_BLOQUE_BASE + 2, 13 * TAMAÑO_BLOQUE_BASE + 2, this);
         }
 
         // 4. Restaurar el "lápiz" original para dibujar textos fuera del tablero escalado
