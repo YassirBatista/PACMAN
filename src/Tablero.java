@@ -34,7 +34,7 @@ public class Tablero extends JPanel implements ActionListener {
     // MAPA (1 = Muro, 0 = Comida, 2 = Espacio Vacío)
     private final short datosNivel[] = {
         1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
-        1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,
+        1,0,0,0,0,0,0,1,3,0,0,0,0,0,1,
         1,0,1,1,1,1,0,1,0,1,1,1,1,0,1,
         1,0,1,0,0,1,0,1,0,1,0,0,1,0,1,
         1,0,1,0,0,0,0,0,0,0,0,0,1,0,1,
@@ -59,6 +59,9 @@ public class Tablero extends JPanel implements ActionListener {
         setFocusable(true);
         setBackground(Color.BLACK);
     }
+
+        String rutaComer = "/assets/sounds/comer.wav";
+        String rutaMorir = "/assets/sounds/pacman_death.wav";
 
         private void cargarImagenes() {
         // Definimos la ruta base que apunta a la carpeta 'assets' en el classpath del proyecto.
@@ -142,7 +145,7 @@ public class Tablero extends JPanel implements ActionListener {
                 datosPantalla[indice] = 2; // Actualizamos el mapa: 2 significa "Vacio/Ya comido"
                 puntaje += 10;             // Sumamos puntaje estándar
                 
-                musica.comer("D:\\Documentos\\Universidad\\Programacion3\\Pcman\\Pac\\Pacman\\src\\assets\\sounds\\comer.wav", -25);
+                musica.comer(rutaComer, -25);
             }
             
             // CASO B: Comer una Fruta/Cereza (Valor 3 en el mapa)
@@ -151,7 +154,7 @@ public class Tablero extends JPanel implements ActionListener {
                 datosPantalla[indice] = 2; // La fruta desaparece del mapa
                 puntaje += 500;            // Recompensa alta por la fruta
                 
-                musica.comer("D:\\Documentos\\Universidad\\Programacion3\\Pcman\\Pac\\Pacman\\src\\assets\\sounds\\comer.wav", -25);
+                //musica.comer("/assets/sounds/comer.wav", -25);
             }
 
             // Verificamos si el usuario solicitó un cambio de dirección (reqDX/reqDY)
@@ -184,17 +187,16 @@ public class Tablero extends JPanel implements ActionListener {
 
         private void moverFantasma() {
 
+
         // El fantasma solo toma decisiones cuando está perfectamente centrado en una casilla.
         if (fantasmaX % TAMAÑO_BLOQUE_BASE == 0 && fantasmaY % TAMAÑO_BLOQUE_BASE == 0) {
             
             // Convertimos píxeles a coordenadas de mapa (casillas)
             int posX = fantasmaX / TAMAÑO_BLOQUE_BASE;
             int posY = fantasmaY / TAMAÑO_BLOQUE_BASE;
-            
-            // 1.1. Obtener la posición de Pac-Man en casillas (asumiendo que pacmanX/Y existen)
-            // **IMPORTANTE:** Reemplaza '0' por las variables reales de Pac-Man si no están en el mismo ámbito.
-            int pacmanX = 0; // << REEMPLAZAR con la variable de Pac-Man X en píxeles
-            int pacmanY = 0; // << REEMPLAZAR con la variable de Pac-Man Y en píxeles
+
+            int pacmanX = 0; 
+            int pacmanY = 0;
 
             int pacmanPosX = pacmanX / TAMAÑO_BLOQUE_BASE;
             int pacmanPosY = pacmanY / TAMAÑO_BLOQUE_BASE;
@@ -340,7 +342,7 @@ public class Tablero extends JPanel implements ActionListener {
             
             // ¡Contacto! Detenemos el juego.
             juegoEnCurso = false;
-            musica.morir("D:\\Documentos\\Universidad\\Programacion3\\Pcman\\Pac\\Pacman\\src\\assets\\sounds\\pacman_death.wav", -20);
+            musica.morir(rutaMorir, -20);
         }
     }
 

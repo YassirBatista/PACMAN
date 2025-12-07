@@ -1,76 +1,63 @@
 import javax.sound.sampled.*;
-import java.io.File;
+import java.net.URL;
 
 public class musica { 
 
-    // 2. Cambié el nombre del método a "reproducir" para evitar conflictos
-    public static void reproducir(String rutaArchivo, float volumenDecibeles) { 
-        try {
-            File archivo = new File(rutaArchivo);
-            if (archivo.exists()) {
-                AudioInputStream audioInput = AudioSystem.getAudioInputStream(archivo);
-                Clip clip = AudioSystem.getClip();
-                clip.open(audioInput);
-
-                // --- AQUI CAMBIAMOS EL VOLUMEN ---
-                // Obtenemos el control de ganancia (volumen)
-                FloatControl ganancia = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
-                // Le asignamos el valor en decibeles
-                ganancia.setValue(volumenDecibeles);
-                // ---------------------------------
-                
-                // Repetir infinitamente
-                clip.loop(Clip.LOOP_CONTINUOUSLY); 
-                
-                // Iniciar
-                clip.start(); 
-            } else {
-                System.out.println("No encuentro el archivo de sonido.");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    // MÉTODOS PÚBLICOS
+    
+    public static void reproducir(String rutaRelativa, float volumenDecibeles) { 
+        // true indica que queremos que se repita (loop)
+        reproducirAudio(rutaRelativa, volumenDecibeles, true);
     }
 
-    public static void comer(String rutaArchivo, float volumenDecibeles){
-        try {
-            File archivo = new File(rutaArchivo);
-            if (archivo.exists()) {
-                AudioInputStream audioInput = AudioSystem.getAudioInputStream(archivo);
-                Clip clip = AudioSystem.getClip();
-                clip.open(audioInput);
-
-                FloatControl ganancia = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
-                ganancia.setValue(volumenDecibeles);
-                
-                // Iniciar
-                clip.start(); 
-            } else {
-                System.out.println("No encuentro el archivo de sonido.");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public static void comer(String rutaRelativa, float volumenDecibeles){
+        // false indica que solo suena una vez
+        reproducirAudio(rutaRelativa, volumenDecibeles, false);
     }
 
-    public static void morir(String rutaArchivo, float volumenDecibeles){
-        try {
-            File archivo = new File(rutaArchivo);
-            if (archivo.exists()) {
-                AudioInputStream audioInput = AudioSystem.getAudioInputStream(archivo);
-                Clip clip = AudioSystem.getClip();
-                clip.open(audioInput);
-
-                FloatControl ganancia = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
-                ganancia.setValue(volumenDecibeles);
-                
-                // Iniciar
-                clip.start(); 
-            } else {
-                System.out.println("No encuentro el archivo de sonido.");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public static void morir(String rutaRelativa, float volumenDecibeles){
+        reproducirAudio(rutaRelativa, volumenDecibeles, false);
     }
-} 
+
+    // MÉTODO PRIVADO CON HILOS (La magia ocurre aquí)
+    private static void reproducirAudio(String ruta, float volumen, boolean loop) {
+        
+        // Creamos un nuevo hilo para que cargar el sonido NO congele el juego
+        new Thread(() -> {
+            try {
+                URL urlSonido = musica.class.getResource(ruta);
+                
+                if (urlSonido != null) {
+                    AudioInputStream audioInput = AudioSystem.getAudioInputStream(urlSonido);
+                    Clip clip = AudioSystem.getClip();
+                    
+                    // Añadimos un "escucha" para cerrar el clip cuando termine
+                    // Si no hacemos esto, la memoria RAM se llena y el juego crashea al rato
+                    clip.addLineListener(event -> {
+                        if (event.getType() == LineEvent.Type.STOP) {
+                            if (!loop) { // Solo cerramos si NO es música de fondo
+                                clip.close(); 
+                            }
+                        }
+                    });
+
+                    clip.open(audioInput);
+
+                    // Control de Volumen
+                    FloatControl ganancia = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+                    ganancia.setValue(volumen);
+                    
+                    if (loop) {
+                        clip.loop(Clip.LOOP_CONTINUOUSLY); 
+                    }
+                    
+                    clip.start(); 
+                } else {
+                    System.err.println("ERROR: No encuentro el sonido en: " + ruta);
+                }
+            } catch (Exception e) {
+                System.err.println("Error reproduciendo audio: " + e.getMessage());
+            }
+        }).start(); // .start() inicia el proceso paralelo
+    }
+}
