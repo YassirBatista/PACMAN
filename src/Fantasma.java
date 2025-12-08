@@ -9,15 +9,20 @@ public class Fantasma {
     
     private int tamanoBloque;
     private int numBloques;
+    private int tipo; 
+    private int espera; //? NUEVO: Contador para salir de la casa
 
     private Image imagenNormal;
     private Image imagenAsustado;
 
-    public Fantasma(int x, int y, int tamanoBloque, int numBloques, Image normal, Image asustado) {
+    // Actualizamos el constructor para recibir la "espera"
+    public Fantasma(int x, int y, int tamanoBloque, int numBloques, int tipo, int espera, Image normal, Image asustado) {
         this.x = x;
         this.y = y;
         this.tamanoBloque = tamanoBloque;
         this.numBloques = numBloques;
+        this.tipo = tipo; 
+        this.espera = espera; //? Guardamos el tiempo de espera
         this.imagenNormal = normal;
         this.imagenAsustado = asustado;
         
@@ -33,60 +38,77 @@ public class Fantasma {
         }
     }
 
-    // --- AQUÍ ESTÁ EL CAMBIO PRINCIPAL ---
-    // Agregamos 'boolean modoCaza' para saber si debe huir
     public void mover(int pacmanX, int pacmanY, short[] datosPantalla, boolean modoCaza) {
         
+        //? LÓGICA DE ESPERA (Salida escalonada)
+        if (espera > 0) {
+            espera--; // Restamos 1 al contador
+            return;   // NO HACEMOS NADA MÁS, se queda quieto
+        }
+
         // Solo decidimos cuando estamos centrados en un bloque
         if (x % tamanoBloque == 0 && y % tamanoBloque == 0) {
             
             int posX = x / tamanoBloque;
             int posY = y / tamanoBloque;
+
+            // --- 1. LÓGICA DE SALIDA (ANTI-ATRAPE) ---
+            if (posY >= 6 && posY <= 7 && posX > 5 && posX < 9) {
+                dx = 0;
+                dy = -1; // Fuerza ir ARRIBA
+                x += dx * VELOCIDAD;
+                y += dy * VELOCIDAD;
+                return; 
+            }
+
+            // ... (EL RESTO DEL CÓDIGO SIGUE IGUAL QUE ANTES) ...
+            
             int pacmanPosX = pacmanX / tamanoBloque;
             int pacmanPosY = pacmanY / tamanoBloque;
 
-            // Variables para decidir la nueva dirección
-            int mejorDX = 0;
-            int mejorDY = 0;
             boolean decisionTomada = false;
 
-            // 1. LÓGICA DE PERSECUCIÓN / HUDA (Inteligente)
-            // Calculamos distancias
+            // --- 2. PERSONALIDAD ---
+            double probabilidadInteligencia = 0.0;
+            
+            if (tipo == 0) probabilidadInteligencia = 0.9; 
+            else if (tipo == 1) probabilidadInteligencia = 0.6; 
+            else probabilidadInteligencia = 0.1; 
+
+            if (modoCaza) probabilidadInteligencia = 0.0; 
+
             int distX = Math.abs(pacmanPosX - posX);
             int distY = Math.abs(pacmanPosY - posY);
 
-            // Decidimos hacia dónde nos gustaría ir idealmente
             int idealDX = 0; 
             int idealDY = 0;
 
             if (pacmanPosX > posX) idealDX = 1; else idealDX = -1;
             if (pacmanPosY > posY) idealDY = 1; else idealDY = -1;
 
-            // TRUCO SIMPLE: Si estamos en modo caza, invertimos la dirección ideal
             if (modoCaza) {
-                idealDX = -idealDX; // Si era derecha, ahora es izquierda
-                idealDY = -idealDY; // Si era abajo, ahora es arriba
+                idealDX = -idealDX; 
+                idealDY = -idealDY;
             }
 
-            // Intentamos movernos en el eje donde la distancia es mayor (Prioridad)
-            if (distX > distY) {
-                // Prioridad Horizontal
-                if (!esMuro(posX + idealDX, posY, datosPantalla) && !(idealDX == -dx)) {
-                    dx = idealDX; dy = 0; decisionTomada = true;
-                } else if (!esMuro(posX, posY + idealDY, datosPantalla) && !(idealDY == -dy)) {
-                    dx = 0; dy = idealDY; decisionTomada = true;
-                }
-            } else {
-                // Prioridad Vertical
-                if (!esMuro(posX, posY + idealDY, datosPantalla) && !(idealDY == -dy)) {
-                    dx = 0; dy = idealDY; decisionTomada = true;
-                } else if (!esMuro(posX + idealDX, posY, datosPantalla) && !(idealDX == -dx)) {
-                    dx = idealDX; dy = 0; decisionTomada = true;
+            // --- 3. INTENTAR MOVERSE INTELIGENTEMENTE ---
+            if (Math.random() < probabilidadInteligencia) {
+                if (distX > distY) {
+                    if (!esMuro(posX + idealDX, posY, datosPantalla) && !(idealDX == -dx)) {
+                        dx = idealDX; dy = 0; decisionTomada = true;
+                    } else if (!esMuro(posX, posY + idealDY, datosPantalla) && !(idealDY == -dy)) {
+                        dx = 0; dy = idealDY; decisionTomada = true;
+                    }
+                } else {
+                    if (!esMuro(posX, posY + idealDY, datosPantalla) && !(idealDY == -dy)) {
+                        dx = 0; dy = idealDY; decisionTomada = true;
+                    } else if (!esMuro(posX + idealDX, posY, datosPantalla) && !(idealDX == -dx)) {
+                        dx = idealDX; dy = 0; decisionTomada = true;
+                    }
                 }
             }
 
-            // 2. MOVIMIENTO ALEATORIO (Plan B)
-            // Si la lógica inteligente falló (había muro) O si chocamos de frente O por azar
+            // --- 4. MOVIMIENTO ALEATORIO ---
             boolean choqueFrente = esMuro(posX + dx, posY + dy, datosPantalla);
             
             if (!decisionTomada && (choqueFrente || Math.random() < 0.2)) {
@@ -100,30 +122,28 @@ public class Fantasma {
                     else if (rand == 2) { tempDX = 0; tempDY = -1; }
                     else if (rand == 3) { tempDX = 0; tempDY = 1; }
 
-                    // Si es válido y no es dar media vuelta (salvo que estemos acorralados)
                     if (!esMuro(posX + tempDX, posY + tempDY, datosPantalla)) {
                         if (choqueFrente || !(tempDX == -dx && tempDY == -dy)) {
                             dx = tempDX;
                             dy = tempDY;
-                            break; // Encontramos salida, rompemos el bucle
+                            break; 
                         }
                     }
                     intentos++;
                 }
             }
             
-            // 3. SEGURIDAD FINAL (Anti-Traspaso)
-            // Si después de todo seguimos apuntando a un muro, nos detenemos o invertimos
+            // --- 5. SEGURIDAD FINAL ---
             if (esMuro(posX + dx, posY + dy, datosPantalla)) {
                 if (!esMuro(posX - dx, posY - dy, datosPantalla)) {
-                    dx = -dx; dy = -dy; // Media vuelta de emergencia
+                    dx = -dx; dy = -dy; 
                 } else {
-                    dx = 0; dy = 0; // Parar en seco
+                    dx = 0; dy = 0; 
                 }
             }
         }
 
-        // Aplicar movimiento
+        // Aplicar movimiento físico
         x += dx * VELOCIDAD;
         y += dy * VELOCIDAD;
     }
