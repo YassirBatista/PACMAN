@@ -6,23 +6,23 @@ import java.util.ArrayList;
 
 public class Tablero extends JPanel implements ActionListener {
 
-    private final int TAMAÑO_BLOQUE_BASE = 24;
-    private final int NUM_BLOQUES = 15; 
-    private final int TAMAÑO_JUEGO = NUM_BLOQUES * TAMAÑO_BLOQUE_BASE; 
+    private final int TAMAÑO_BLOQUE_BASE = 24;                          //? Pixeles de cada bloque
+    private final int NUM_BLOQUES = 15;                                 //? Tamano del mapa
+    private final int TAMAÑO_JUEGO = NUM_BLOQUES * TAMAÑO_BLOQUE_BASE;  //? 
     private final int VELOCIDAD = 4;
 
     // IMÁGENES
     private Image pacmanArriba, pacmanAbajo, pacmanIzquierda, pacmanDerecha; 
-    private Image fantasma, cereza;
+    private Image fantasmaAzul, fantasmaRosa, fantasmaRojo, fantasmaNaranja, cereza;
     private Image fantasmaAsustado; // Imagen del fantasma vulnerable
     private Image imagenActualPacman; 
 
     // VARIABLES PACMAN
-    private int pacmanX, pacmanY; 
-    private int pacmanDX, pacmanDY; 
-    private int reqDX, reqDY; 
+    private int pacmanX, pacmanY;       //* 
+    private int pacmanDX, pacmanDY;     //*
+    private int reqDX, reqDY;           //*
     
-    // VARIABLES FANTASMA (Ahora usamos el Objeto)
+    // VARIABLES FANTASMA 
     private Fantasma miFantasma; 
 
     // ESTADO DEL JUEGO
@@ -73,14 +73,20 @@ public class Tablero extends JPanel implements ActionListener {
         String rutaBaseFantasma = "/assets/sprites/ghosts/"; 
 
         try {
+            // Cargamos los sprites de Pacman
             pacmanArriba = new ImageIcon(getClass().getResource(rutaBase + "pacmanUp.png")).getImage();
             pacmanAbajo = new ImageIcon(getClass().getResource(rutaBase + "pacmanDown.png")).getImage();
             pacmanIzquierda = new ImageIcon(getClass().getResource(rutaBase + "pacmanLeft.png")).getImage();
             pacmanDerecha = new ImageIcon(getClass().getResource(rutaBase + "pacmanRight.png")).getImage();
             
-            fantasma = new ImageIcon(getClass().getResource(rutaBaseFantasma + "blueGhost.png")).getImage();
-            // Asegúrate que la imagen exista, si no usa la misma "blueGhost.png" temporalmente
+            // Sprites de los fantasmas
+            fantasmaAzul = new ImageIcon(getClass().getResource(rutaBaseFantasma + "blueGhost.png")).getImage();
+            fantasmaRosa = new ImageIcon(getClass().getResource(rutaBaseFantasma + "pinkghost.png")).getImage();
+            fantasmaRojo = new ImageIcon(getClass().getResource(rutaBaseFantasma + "redGhost.png")).getImage();
+            fantasmaNaranja = new ImageIcon(getClass().getResource(rutaBaseFantasma + "orangeGhost.png")).getImage();
             fantasmaAsustado = new ImageIcon(getClass().getResource(rutaBaseFantasma + "scaredGhost.png")).getImage();
+
+            //Srpites de la cereza
             cereza = new ImageIcon(getClass().getResource(rutaBase + "cherry.png")).getImage();
             
         } catch (Exception e) {
@@ -92,7 +98,7 @@ public class Tablero extends JPanel implements ActionListener {
     }
 
     private void iniciarJuego() {
-        if (timer != null) timer.stop();
+        if (timer != null) timer.stop(); //! Detenemos el juego para evitar que al reiniciar cuando morimos la velocidad se multiplique
         
         // 1. Reiniciar Pacman
         pacmanX = 7 * TAMAÑO_BLOQUE_BASE; 
@@ -102,7 +108,10 @@ public class Tablero extends JPanel implements ActionListener {
 
         // 2. Reiniciar Fantasma (Usando la Clase Fantasma)
         // Pasamos las imágenes cargadas al objeto
-        miFantasma = new Fantasma(7 * TAMAÑO_BLOQUE_BASE, 7 * TAMAÑO_BLOQUE_BASE, TAMAÑO_BLOQUE_BASE, NUM_BLOQUES, fantasma, fantasmaAsustado);
+        miFantasma = new Fantasma(7 * TAMAÑO_BLOQUE_BASE, 7 * TAMAÑO_BLOQUE_BASE, TAMAÑO_BLOQUE_BASE, NUM_BLOQUES, fantasmaAzul, fantasmaAsustado);
+        miFantasma = new Fantasma(7 * TAMAÑO_BLOQUE_BASE, 7 * TAMAÑO_BLOQUE_BASE, TAMAÑO_BLOQUE_BASE, NUM_BLOQUES, fantasmaRosa, fantasmaAsustado);
+        miFantasma = new Fantasma(7 * TAMAÑO_BLOQUE_BASE, 7 * TAMAÑO_BLOQUE_BASE, TAMAÑO_BLOQUE_BASE, NUM_BLOQUES, fantasmaRojo, fantasmaAsustado);
+        miFantasma = new Fantasma(7 * TAMAÑO_BLOQUE_BASE, 7 * TAMAÑO_BLOQUE_BASE, TAMAÑO_BLOQUE_BASE, NUM_BLOQUES, fantasmaNaranja, fantasmaAsustado);
 
         juegoEnCurso = true;
         puntaje = 0;

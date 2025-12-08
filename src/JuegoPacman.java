@@ -5,10 +5,10 @@ public class JuegoPacman extends JFrame {
     public JuegoPacman() {
         add(new Tablero());
 
-        setTitle("Pac-Man Java - Redimensionable");
+        setTitle("Pac-Man Java    ");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         // Tamaño inicial
-        setSize(400, 450); 
+        setSize(600, 700); 
         setLocationRelativeTo(null);
         
         setResizable(true);
