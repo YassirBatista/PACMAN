@@ -3,8 +3,6 @@ import java.net.URL;
 
 public class musica { 
 
-    // MÉTODOS PÚBLICOS
-    
     public static void reproducir(String rutaRelativa, float volumenDecibeles) { 
         // true indica que queremos que se repita (loop)
         reproducirAudio(rutaRelativa, volumenDecibeles, true);
@@ -19,10 +17,9 @@ public class musica {
         reproducirAudio(rutaRelativa, volumenDecibeles, false);
     }
 
-    // MÉTODO PRIVADO CON HILOS (La magia ocurre aquí)
     private static void reproducirAudio(String ruta, float volumen, boolean loop) {
         
-        // Creamos un nuevo hilo para que cargar el sonido NO congele el juego
+        // Creamos un nuevo hilo para que cargar el sonido en el y que el juego no se cargue con el sonido a la vez en uno solo
         new Thread(() -> {
             try {
                 URL urlSonido = musica.class.getResource(ruta);

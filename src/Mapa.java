@@ -22,7 +22,7 @@ public class Mapa {
         1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
     };
 
-    // NIVEL 2 (Ejemplo: Un diseño diferente, quizás más difícil)
+    // NIVEL 2 
     private static final short[] NIVEL_2 = {
         1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
         1,2,2,2,2,2,0,0,0,0,2,2,2,2,1,
@@ -46,7 +46,6 @@ public class Mapa {
         switch(numeroNivel) {
             case 1: return NIVEL_1;
             case 2: return NIVEL_2;
-            // Puedes agregar case 3, case 4, etc.
             default: return null; // Si retorna null, significa que ganaste el juego
         }
     }
