@@ -5,6 +5,9 @@ import java.awt.event.ActionListener;
 
 public class JuegoPacman extends JFrame {
 
+    // Variable estática para el menú para poder reutilizarla
+    private static JFrame ventanaMenu;
+
     // --- 1. CONSTRUCTOR DEL JUEGO (Se ejecuta al dar clic en "Jugar") ---
     public JuegoPacman() {
         // Agregamos el Tablero (donde está toda la lógica del juego)
@@ -30,9 +33,23 @@ public class JuegoPacman extends JFrame {
         mostrarMenu();
     }
 
-    // --- 3. LÓGICA DEL MENÚ (Tu código de Prueba_2) ---
+    // --- 3. NUEVO: MÉTODO PARA VOLVER AL MENÚ (Llamado desde Tablero) ---
+    public static void volverAlMenu(JFrame ventanaJuegoActual) {
+        // Cerramos la ventana del juego actual
+        if (ventanaJuegoActual != null) {
+            ventanaJuegoActual.dispose();
+        }
+        
+        // Detenemos la música del juego
+        musica.detener(); 
+
+        // Abrimos el menú de nuevo
+        mostrarMenu();
+    }
+
+    // --- 4. LÓGICA DEL MENÚ (Tu código de Prueba_2) ---
     public static void mostrarMenu() {
-        JFrame ventanaMenu = new JFrame("Menú Principal");
+        ventanaMenu = new JFrame("Menú Principal");
         ventanaMenu.setSize(720, 576);
         ventanaMenu.setLayout(null);
         ventanaMenu.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -60,15 +77,19 @@ public class JuegoPacman extends JFrame {
 
         // --- IMAGEN DEL MENÚ ---
         try {
-            String rutaImagen = "PACMAN/src/assets/sprites/interfaz/pac.gif"; 
+            // Usamos getResource para que funcione en cualquier carpeta
+            java.net.URL urlImagen = JuegoPacman.class.getResource("/assets/sprites/interfaz/pac.gif"); 
 
-            ImageIcon pacmanGif = new ImageIcon(rutaImagen);
-            JLabel imagenPacman = new JLabel(pacmanGif);
-            
-            // Ajuste de seguridad por si la imagen no carga para que no de error
-            if (pacmanGif.getIconWidth() > 0) {
-                imagenPacman.setBounds(40, 160, pacmanGif.getIconWidth(), pacmanGif.getIconHeight());
-                ventanaMenu.add(imagenPacman);
+            if (urlImagen != null) {
+                ImageIcon pacmanGif = new ImageIcon(urlImagen);
+                JLabel imagenPacman = new JLabel(pacmanGif);
+                
+                // Ajuste de seguridad por si la imagen no carga para que no de error
+                if (pacmanGif.getIconWidth() > 0) {
+                    // La dejamos en 40 (Izquierda) para que no tape los botones
+                    imagenPacman.setBounds(40, 160, pacmanGif.getIconWidth(), pacmanGif.getIconHeight());
+                    ventanaMenu.add(imagenPacman);
+                }
             }
         } catch (Exception e) {
             System.out.println("No se pudo cargar la imagen del menú.");
@@ -104,6 +125,18 @@ public class JuegoPacman extends JFrame {
         puntajes.setForeground(negro);
         puntajes.setBorder(BorderFactory.createLineBorder(Color.BLACK, 3));
         puntajes.setFocusPainted(false);
+        
+        // ACCIÓN: Mostrar lista de puntajes
+        puntajes.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //? Obtenemos el texto del archivo usando la clase GestorPuntajes
+                String lista = Puntajes.leerPuntajes();
+                
+                //? Mostramos una ventana con los datos
+                JOptionPane.showMessageDialog(ventanaMenu, lista, "Mejores Puntajes", JOptionPane.INFORMATION_MESSAGE);
+            }
+        });
 
         // BOTÓN SALIR
         JButton salir = new JButton("Salir");

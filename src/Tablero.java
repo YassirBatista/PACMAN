@@ -48,13 +48,48 @@ public class Tablero extends JPanel implements ActionListener {
     // MAPA EN MEMORIA
     private short[] datosPantalla; 
 
+    //? Boton para volver al menu
+    private JButton btnVolver;
+
     // --- CONSTRUCTOR ---
     public Tablero() {
+        //? Usamos layout nulo para poder usar setBounds en el boton
+        setLayout(null);
+
         cargarImagenes();
         iniciarJuego();
         addKeyListener(new Controlador(this)); 
         setFocusable(true);
         setBackground(Color.BLACK);
+
+        crearBotonVolver(); //* Agregamos el boton a la pantalla
+    }
+
+    //? METODO NUEVO: Crea y configura el boton de salir
+    private void crearBotonVolver() {
+        btnVolver = new JButton("Volver");
+        btnVolver.setBounds(500, 10, 80, 30); //? Coordenadas (X, Y, Ancho, Alto)
+        
+        //? Estilo visual tipo Pacman
+        btnVolver.setBackground(new Color(0xffeb3b)); // Amarillo
+        btnVolver.setForeground(Color.BLACK);
+        btnVolver.setFont(new Font("Arial", Font.BOLD, 12));
+        btnVolver.setBorder(BorderFactory.createLineBorder(Color.WHITE, 2));
+        
+        //! MUY IMPORTANTE: Esto evita que el boton robe el foco del teclado
+        //! Si no pones esto, al hacer clic, Pacman dejara de moverse.
+        btnVolver.setFocusable(false); 
+
+        //* Accion al hacer clic
+        btnVolver.addActionListener(e -> {
+            timer.stop(); //* Pausamos el juego
+            
+            //? Buscamos la ventana principal y llamamos al metodo de volver
+            JFrame ventanaActual = (JFrame) SwingUtilities.getWindowAncestor(this);
+            JuegoPacman.volverAlMenu(ventanaActual);
+        });
+
+        this.add(btnVolver);
     }
 
     // --- MÉTODOS PÚBLICOS ---
@@ -105,7 +140,7 @@ public class Tablero extends JPanel implements ActionListener {
         cargarNivel(); 
     }
 
-    //? Método nuevo: Solo mueve a los personajes al inicio, NO borra el mapa
+    //? Solo mueve a los personajes al inicio, NO borra el mapa
     private void resetearPosiciones() {
         pacmanX = 7 * TAMAÑO_BLOQUE_BASE; 
         pacmanY = 11 * TAMAÑO_BLOQUE_BASE;
@@ -113,7 +148,6 @@ public class Tablero extends JPanel implements ActionListener {
         reqDX = 0; reqDY = 0; 
 
         // Reiniciamos los fantasmas a sus posiciones originales
-        // (Nota: Esto los recrea, si quisieras solo moverlos, habría que agregar setPosicion a Fantasma)
         crearFantasmas(); 
         
         timer.start(); // Reanudamos el juego
@@ -159,9 +193,13 @@ public class Tablero extends JPanel implements ActionListener {
 
         //! Si el mapa es null, significa que ya no hay mas niveles (Victoria)
         if (mapaBase == null) {
+            timer.stop();
             juegoEnCurso = false;
-            juegoGanado = true;
-            repaint();
+            
+            JOptionPane.showMessageDialog(this, "FELICIDADES!\nHas completado todos los niveles.", "Victoria", JOptionPane.INFORMATION_MESSAGE);
+            
+            //* Guardamos el record tambien al ganar
+            guardarRecord(); 
             return;
         }
 
@@ -276,7 +314,14 @@ public class Tablero extends JPanel implements ActionListener {
                         resetearPosiciones();
                         System.out.println("Te quedan " + vidas + " vidas.");
                     } else {
-                        juegoEnCurso = false; //! Si vidas llega a 0, se acaba el juego
+                        //! GAME OVER
+                        timer.stop();
+                        juegoEnCurso = false;
+                        
+                        // ANTES: JOptionPane.showMessageDialog... y volverAlMenu
+                        // AHORA: Llamamos a guardarRecord() que hace todo eso
+                        musica.detener(); // Detenemos musica por si acaso
+                        guardarRecord();
                     }
                 }
             }
@@ -394,5 +439,19 @@ public class Tablero extends JPanel implements ActionListener {
              
              g2d.drawString(mensaje, (getWidth() - anchoTexto)/2, getHeight()/2);
         }
+    }
+
+    //? METODO AUXILIAR: Pide el nombre y guarda el record
+    private void guardarRecord() {
+        //* Pedimos el nombre al usuario con una ventana emergente
+        String nombre = JOptionPane.showInputDialog(this, "Juego Terminado. Puntaje: " + puntaje + "\nIngresa tu nombre:");
+        
+        if (nombre != null && !nombre.trim().isEmpty()) {
+            Puntajes.guardarPuntaje(nombre, puntaje); //* Guardamos en el archivo
+        }
+        
+        //? Despues de guardar, volvemos al menu
+        JFrame ventanaActual = (JFrame) SwingUtilities.getWindowAncestor(this);
+        JuegoPacman.volverAlMenu(ventanaActual);
     }
 }

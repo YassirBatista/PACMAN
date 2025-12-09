@@ -1,9 +1,8 @@
 public class Mapa {
 
     //* 1 = Muro, 0 = Comida, 2 = Espacio Vacío, 3 = Fruta (si quisieras ponerla fija)
-    //* Hacemos el método "static" para poder llamarlo sin crear un objeto "new Mapa()"
 
-    // NIVEL 1 (El que ya tenías)
+    // NIVEL 1 
     private static final short[] NIVEL_1 = {
         1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
         1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,
@@ -29,9 +28,9 @@ public class Mapa {
         1,2,1,1,1,0,1,1,1,0,1,1,1,2,1,
         1,2,1,0,0,0,0,0,0,0,0,0,1,2,1,
         1,2,1,0,1,1,1,0,1,1,1,0,1,2,1,
-        1,0,0,0,0,0,0,2,0,0,0,0,0,0,1,
-        1,1,1,1,0,1,2,2,2,1,0,1,1,1,1,
-        1,1,1,1,0,1,2,2,2,1,0,1,1,1,1,
+        1,0,0,0,1,1,0,2,0,1,1,0,0,0,1, 
+        1,1,1,0,1,2,2,2,2,2,1,0,1,1,1, 
+        1,1,1,0,1,2,2,2,2,2,1,0,1,1,1, 
         1,0,0,0,0,0,0,2,0,0,0,0,0,0,1,
         1,2,1,0,1,1,1,0,1,1,1,0,1,2,1,
         1,2,1,0,0,0,0,0,0,0,0,0,1,2,1,
@@ -46,7 +45,7 @@ public class Mapa {
         switch(numeroNivel) {
             case 1: return NIVEL_1;
             case 2: return NIVEL_2;
-            default: return null; // Si retorna null, significa que ganaste el juego
+            default: return null; // Si retorna null, significa que se gano el juego
         }
     }
 }
