@@ -162,13 +162,13 @@ public class Tablero extends JPanel implements ActionListener {
         fantasmas.add(new Fantasma(7 * TAMAÑO_BLOQUE_BASE, 7 * TAMAÑO_BLOQUE_BASE, TAMAÑO_BLOQUE_BASE, NUM_BLOQUES, 0, 0, fantasmaRojo, fantasmaAsustado)); 
         
         // 2. Rosa (Medio): Espera 50 ciclos (aprox 2 seg)
-        //fantasmas.add(new Fantasma(6 * TAMAÑO_BLOQUE_BASE, 7 * TAMAÑO_BLOQUE_BASE, TAMAÑO_BLOQUE_BASE, NUM_BLOQUES, 1, 50, fantasmaRosa, fantasmaAsustado)); 
+        fantasmas.add(new Fantasma(6 * TAMAÑO_BLOQUE_BASE, 7 * TAMAÑO_BLOQUE_BASE, TAMAÑO_BLOQUE_BASE, NUM_BLOQUES, 1, 50, fantasmaRosa, fantasmaAsustado)); 
         
         // 3. Azul (Aleatorio): Espera 100 ciclos (aprox 4 seg)
-        //fantasmas.add(new Fantasma(8 * TAMAÑO_BLOQUE_BASE, 7 * TAMAÑO_BLOQUE_BASE, TAMAÑO_BLOQUE_BASE, NUM_BLOQUES, 2, 100, fantasmaAzul, fantasmaAsustado)); 
+        fantasmas.add(new Fantasma(8 * TAMAÑO_BLOQUE_BASE, 7 * TAMAÑO_BLOQUE_BASE, TAMAÑO_BLOQUE_BASE, NUM_BLOQUES, 2, 100, fantasmaAzul, fantasmaAsustado)); 
         
         // 4. Naranja (Aleatorio): Espera 150 ciclos (aprox 6 seg)
-        //fantasmas.add(new Fantasma(7 * TAMAÑO_BLOQUE_BASE, 6 * TAMAÑO_BLOQUE_BASE, TAMAÑO_BLOQUE_BASE, NUM_BLOQUES, 2, 150, fantasmaNaranja, fantasmaAsustado)); 
+        fantasmas.add(new Fantasma(7 * TAMAÑO_BLOQUE_BASE, 6 * TAMAÑO_BLOQUE_BASE, TAMAÑO_BLOQUE_BASE, NUM_BLOQUES, 2, 150, fantasmaNaranja, fantasmaAsustado)); 
     }
 
     private void cargarNivel() {
