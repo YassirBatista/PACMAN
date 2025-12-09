@@ -1,5 +1,5 @@
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import java.awt.event.KeyAdapter;   //? Para el manejo de los eventos de teclado sin implementar todos los de la clase
+import java.awt.event.KeyEvent;     //? Para detectar las pulsaciones 
 
 public class Controlador extends KeyAdapter {
 

@@ -1,8 +1,8 @@
-import java.awt.*;
-import java.awt.event.*;
-import java.awt.geom.AffineTransform; 
-import javax.swing.*;
-import java.util.ArrayList; 
+import java.awt.*;                      //? nos permite usar clases basicas 2d
+import java.awt.event.*;                //? Para el manejo de los eventos de teclado
+import java.awt.geom.AffineTransform;   //? Permite el escalado demas con imagenes
+import javax.swing.*;                   //? Contiene JFrame, JPanel, Timer y Jlabel
+import java.util.ArrayList;             //? Para el manejo de listas Dinamicas 
 
 public class Tablero extends JPanel implements ActionListener {
 
