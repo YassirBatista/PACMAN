@@ -4,24 +4,24 @@ import java.net.URL;
 public class musica { 
 
     //? Variable global para poder controlar la musica de fondo desde fuera
-    private static Clip clipFondo;
+    private static Clip clipFondo; //! Objeto que permite reproducir sonido y clipFondo guarda la referencia de la musica actual.
 
-    public static void reproducir(String rutaRelativa, float volumenDecibeles) { 
+    public static void reproducir(String rutaRelativa, float volumenDecibeles) {  //*Reproduce musica de fondo, en loop infinito.
         //* true indica que queremos que se repita (loop)
         reproducirAudio(rutaRelativa, volumenDecibeles, true);
     }
 
-    public static void comer(String rutaRelativa, float volumenDecibeles){
+    public static void comer(String rutaRelativa, float volumenDecibeles){//* Reproduce sonidos cortos, comer puntitos, comer fruta
         //* false indica que solo suena una vez
         reproducirAudio(rutaRelativa, volumenDecibeles, false);
     }
 
-    public static void morir(String rutaRelativa, float volumenDecibeles){
+    public static void morir(String rutaRelativa, float volumenDecibeles){ //* Detiene y elimina la musica  de fondo 
         reproducirAudio(rutaRelativa, volumenDecibeles, false);
     }
 
     //? METODO NUEVO: Para detener la musica al salir al menu
-    public static void detener() {
+    public static void detener() { //* Detiene y elimina la musica  de fondo 
         if (clipFondo != null) {
             if (clipFondo.isRunning()) {
                 clipFondo.stop(); //! Paramos el sonido
@@ -31,7 +31,7 @@ public class musica {
         }
     }
 
-    private static void reproducirAudio(String ruta, float volumen, boolean loop) {
+    private static void reproducirAudio(String ruta, float volumen, boolean loop) { //* Este metodo controla TODO, abrir archivo, Crear Clip, aplicar Volumen, fin del audio.
         
         //? Creamos un nuevo hilo para cargar el sonido y que el juego no se trabe
         new Thread(() -> {
