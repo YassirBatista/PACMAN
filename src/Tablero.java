@@ -162,23 +162,38 @@ public class Tablero extends JPanel implements ActionListener {
         fantasmas.add(new Fantasma(7 * TAMAÑO_BLOQUE_BASE, 7 * TAMAÑO_BLOQUE_BASE, TAMAÑO_BLOQUE_BASE, NUM_BLOQUES, 0, 0, fantasmaRojo, fantasmaAsustado)); 
         
         // 2. Rosa (Medio): Espera 50 ciclos (aprox 2 seg)
-        fantasmas.add(new Fantasma(6 * TAMAÑO_BLOQUE_BASE, 7 * TAMAÑO_BLOQUE_BASE, TAMAÑO_BLOQUE_BASE, NUM_BLOQUES, 1, 50, fantasmaRosa, fantasmaAsustado)); 
+        //fantasmas.add(new Fantasma(6 * TAMAÑO_BLOQUE_BASE, 7 * TAMAÑO_BLOQUE_BASE, TAMAÑO_BLOQUE_BASE, NUM_BLOQUES, 1, 50, fantasmaRosa, fantasmaAsustado)); 
         
         // 3. Azul (Aleatorio): Espera 100 ciclos (aprox 4 seg)
-        fantasmas.add(new Fantasma(8 * TAMAÑO_BLOQUE_BASE, 7 * TAMAÑO_BLOQUE_BASE, TAMAÑO_BLOQUE_BASE, NUM_BLOQUES, 2, 100, fantasmaAzul, fantasmaAsustado)); 
+        //fantasmas.add(new Fantasma(8 * TAMAÑO_BLOQUE_BASE, 7 * TAMAÑO_BLOQUE_BASE, TAMAÑO_BLOQUE_BASE, NUM_BLOQUES, 2, 100, fantasmaAzul, fantasmaAsustado)); 
         
         // 4. Naranja (Aleatorio): Espera 150 ciclos (aprox 6 seg)
-        fantasmas.add(new Fantasma(7 * TAMAÑO_BLOQUE_BASE, 6 * TAMAÑO_BLOQUE_BASE, TAMAÑO_BLOQUE_BASE, NUM_BLOQUES, 2, 150, fantasmaNaranja, fantasmaAsustado)); 
+        //fantasmas.add(new Fantasma(7 * TAMAÑO_BLOQUE_BASE, 6 * TAMAÑO_BLOQUE_BASE, TAMAÑO_BLOQUE_BASE, NUM_BLOQUES, 2, 150, fantasmaNaranja, fantasmaAsustado)); 
     }
 
     private void cargarNivel() {
         if (timer != null) timer.stop(); //! Detenemos el reloj anterior por seguridad para evitar que se multiplique la velocidad.
         
-        //* Reiniciamos la posicion y movimiento de Pacman
-        pacmanX = 7 * TAMAÑO_BLOQUE_BASE; 
-        pacmanY = 11 * TAMAÑO_BLOQUE_BASE;
-        pacmanDX = 0; pacmanDY = 0; 
-        reqDX = 0; reqDY = 0; 
+        //* Reiniciamos la posición y movimiento de Pacman según el nivel
+        if (nivelActual == 1) {
+            pacmanX = 7 * TAMAÑO_BLOQUE_BASE; 
+            pacmanY = 11 * TAMAÑO_BLOQUE_BASE;   // POSICIÓN NIVEL 1
+        } 
+        else if (nivelActual == 2) {
+            pacmanX = 7 * TAMAÑO_BLOQUE_BASE; 
+            pacmanY = 12 * TAMAÑO_BLOQUE_BASE;   // POSICIÓN NIVEL 2
+        } 
+        else {
+            //* Si en el futuro agregas más niveles, puedes ajustar la posición default aquí
+            pacmanX = 7 * TAMAÑO_BLOQUE_BASE; 
+            pacmanY = 11 * TAMAÑO_BLOQUE_BASE;   // DEFAULT
+        }
+
+        //* Reiniciamos dirección y movimiento
+        pacmanDX = 0; 
+        pacmanDY = 0; 
+        reqDX = 0; 
+        reqDY = 0; 
 
         crearFantasmas();   //? Creamos los 4 Fantasmas de nuevo
 
