@@ -183,10 +183,6 @@ public class Tablero extends JPanel implements ActionListener {
             pacmanX = 7 * TAMAÑO_BLOQUE_BASE; 
             pacmanY = 12 * TAMAÑO_BLOQUE_BASE;   // POSICIÓN NIVEL 2
         } 
-        else {
-            pacmanX = 7 * TAMAÑO_BLOQUE_BASE; 
-            pacmanY = 11 * TAMAÑO_BLOQUE_BASE;   // DEFAULT
-        }
 
         //* Reiniciamos dirección y movimiento
         pacmanDX = 0; 
