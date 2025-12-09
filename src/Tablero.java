@@ -8,8 +8,8 @@ public class Tablero extends JPanel implements ActionListener {
 
     private final int TAMAÑO_BLOQUE_BASE = 24;                              //* Pixeles de los bloques
     private final int NUM_BLOQUES = 15;                                     //* cantidad de cuadrados del mapa
-    private final int TAMAÑO_JUEGO = NUM_BLOQUES * TAMAÑO_BLOQUE_BASE;      //* 
-    private final int VELOCIDAD = 4;
+    private final int TAMAÑO_JUEGO = NUM_BLOQUES * TAMAÑO_BLOQUE_BASE;      //* Total de pixeles en el mapa
+    private final int VELOCIDAD = 4;                                        //* Velocidad del juego
 
     // IMÁGENES
     private Image pacmanArriba, pacmanAbajo, pacmanIzquierda, pacmanDerecha; 
@@ -19,21 +19,21 @@ public class Tablero extends JPanel implements ActionListener {
 
     // VARIABLES PACMAN
     private int pacmanX, pacmanY;           //* Posicion X,Y de pacman      
-    private int pacmanDX, pacmanDY;         //* Dirreccion de movimiento
+    private int pacmanDX, pacmanDY;         //* Dirreccion de movimiento  (-1, 0, 1)
     private int reqDX, reqDY;               //* Memroia donde guardamos hacia donde queriamos ir
     
     // VARIABLES FANTASMAS (Lista)
-    private ArrayList<Fantasma> fantasmas; 
+    private ArrayList<Fantasma> fantasmas;  //* Lista que los contiene
 
     // ESTADO DEL JUEGO
     private int puntaje = 0;
     private int nivelActual = 1;            //? Nivel del mapa
     private int vidas = 3;                  //? Vidas de Pacman       
-    private boolean juegoEnCurso = true;
-    private boolean juegoGanado = false; 
-    private Timer timer;
+    private boolean juegoEnCurso = true;    //* Determina si se sigue jugando
+    private boolean juegoGanado = false;    //* Se vuelve True si se termina todos los niveles
+    private Timer timer;                    //* Ejecuta el juego cada 30 mls
 
-    // LISTA DE OBJETOS
+    // LISTA DE OBJETOS /  Frutas cereza
     private ArrayList<Elemento> elementos;
 
     // VARIABLES DEL MODO CAZA
@@ -46,7 +46,7 @@ public class Tablero extends JPanel implements ActionListener {
     String rutaMorir = "/assets/sounds/pacman_death.wav";
 
     // MAPA EN MEMORIA
-    private short[] datosPantalla; 
+    private short[] datosPantalla;  //! Arreglo que indica cada posicion del mapa
 
     //? Boton para volver al menu
     private JButton btnVolver;
@@ -76,8 +76,8 @@ public class Tablero extends JPanel implements ActionListener {
         btnVolver.setFont(new Font("Arial", Font.BOLD, 12));
         btnVolver.setBorder(BorderFactory.createLineBorder(Color.WHITE, 2));
         
-        //! MUY IMPORTANTE: Esto evita que el boton robe el foco del teclado
-        //! Si no pones esto, al hacer clic, Pacman dejara de moverse.
+        //! Esto evita que el boton robe el foco del teclado
+        //! Si no pone esto, al hacer clic, Pacman dejara de moverse.
         btnVolver.setFocusable(false); 
 
         //* Accion al hacer clic
@@ -93,9 +93,9 @@ public class Tablero extends JPanel implements ActionListener {
     }
 
     // --- MÉTODOS PÚBLICOS ---
-    public boolean isJuegoEnCurso() { return juegoEnCurso; }
+    public boolean isJuegoEnCurso() { return juegoEnCurso; } //* El curso retorna si el juego esta en curso.
     
-    public void setDireccion(int x, int y) {
+    public void setDireccion(int x, int y) { //! Guarda la direccion que solicita el jugador.
         this.reqDX = x;
         this.reqDY = y;
     }
@@ -107,7 +107,7 @@ public class Tablero extends JPanel implements ActionListener {
         iniciarJuego(); 
     }
 
-    private void cargarImagenes() {
+    private void cargarImagenes() { //? Simplemente guardamos las direcciones, en una variables para buscarlas individualmente las imagines.
         String rutaBase = "/assets/sprites/pacman/";
         String rutaBaseFantasma = "/assets/sprites/ghosts/"; 
 
@@ -172,7 +172,7 @@ public class Tablero extends JPanel implements ActionListener {
     }
 
     private void cargarNivel() {
-        if (timer != null) timer.stop(); //! Detenemos el reloj anterior por seguridad
+        if (timer != null) timer.stop(); //! Detenemos el reloj anterior por seguridad para evitar que se multiplique la velocidad.
         
         //* Reiniciamos la posicion y movimiento de Pacman
         pacmanX = 7 * TAMAÑO_BLOQUE_BASE; 
@@ -305,7 +305,7 @@ public class Tablero extends JPanel implements ActionListener {
                     musica.comer(rutaComer, -25);
                     f.setPosicion(7 * TAMAÑO_BLOQUE_BASE, 7 * TAMAÑO_BLOQUE_BASE); //* Lo mandamos a la casa
                 } else { 
-                    //! Si eztamos en modo normal el fantasma nos mata y perdemos una vida
+                    //! Si estamos en modo normal el fantasma nos mata y perdemos una vida
                     musica.morir(rutaMorir, -20);
                     vidas--;
                     

@@ -17,12 +17,12 @@ public class JuegoPacman extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setSize(600, 700); 
         setLocationRelativeTo(null); // Centra la ventana en la pantalla
-        setResizable(true);
+        setResizable(true); //* Para agrandar o minimizar la ventana */
         setVisible(true);
 
         // Activamos la música al iniciar la ventana del juego
         try {
-            musica.reproducir("/assets/sounds/musica.wav", -40);
+            musica.reproducir("/assets/sounds/musica.wav", -40); //*Ruta y los decibeles */
         } catch (Exception e) {
             System.out.println("Error al reproducir música: " + e.getMessage());
         }
